@@ -1,78 +1,66 @@
 import logo from './logo.svg';
 
 import './App.css';
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 //import "./style.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlayCircle } from '@fortawesome/free-solid-svg-icons';
-import { faPlayCircle, faStepBackward, faStepForward } from '@fortawesome/free-solid-svg-icons';
+import { faPlayCircle, faPauseCircle, faStepBackward, faStepForward } from '@fortawesome/free-solid-svg-icons';
 
-const songs = [
-  { id: 0, name: "Let me love you", duration: "05:34" },
-  { id: 1, name: "Let me love you", duration: "05:34" },
-  { id: 2, name: "Let me love you", duration: "05:34" },
-  { id: 3, name: "Let me love you", duration: "05:34" },
+const songsList = [
+  { songName: "Diya Aur Baati Hum", filePath: "./song/1.mp3", coverPath: "./covers/cover1.jpg" },
+  { songName: "Har Funn Maula", filePath: "./song/2.mp3", coverPath: "./covers/cover2.jpg" },
+  { songName: "Guilty - Karan Aujla", filePath: "./song/3.mp3", coverPath: "./covers/cover3.jpg" },
+  {songName: "Tu Hi Meri Shab Hai - Gangster 320Kbps", filePath: "song/4.mp3", coverPath: "covers/cover4.jpg"},
+	{songName: "Lut Gaye - Jubin Nautiyal", filePath: "song/5.mp3", coverPath: "covers/cover5.jpg"},
+	{songName: "Mummy Kassam - Coolie No 1", filePath: "song/6.mp3", coverPath: "covers/cover6.jpg"},
+	{songName: "Jai Veeru - Khasa Aala Chahar", filePath: "song/7.mp3", coverPath: "covers/cover7.jpg"},
+	{songName: "Saiyyonee - Yasser Desai", filePath: "song/8.mp3", coverPath: "covers/cover8.jpg"},
 ];
 
-const App = () => {
-  const [currentSong, setCurrentSong] = useState(songs[0]);
-  const [progress, setProgress] = useState(0);
+function App() {
+  const [songIndex, setSongIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(new Audio(songsList[songIndex].filePath));
+
+  const togglePlayPause = () => {
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const nextSong = () => {
+    let newIndex = songIndex + 1 >= songsList.length ? 0 : songIndex + 1;
+    setSongIndex(newIndex);
+    audioRef.current.src = songsList[newIndex].filePath;
+    audioRef.current.play();
+    setIsPlaying(true);
+  };
+
+  const prevSong = () => {
+    let newIndex = songIndex - 1 < 0 ? songsList.length - 1 : songIndex - 1;
+    setSongIndex(newIndex);
+    audioRef.current.src = songsList[newIndex].filePath;
+    audioRef.current.play();
+    setIsPlaying(true);
+  };
 
   return (
-    <div>
-      <nav>
-        <ul>
-          <li className="brand">
-            <img src="logo.svg" alt="Spotify" /> Spotify
-          </li>
-          <li>Home</li>
-          <li>About</li>
-        </ul>
-      </nav>
-
-      <div className="container">
-        <div className="songList">
-          <h1>Best of MCS - No Copyright Sounds</h1>
-          <div className="songItemContainer">
-            {songs.map((song) => (
-              <div className="songItem" key={song.id}>
-                <img alt="" />
-                <span className="songName">{song.name}</span>
-                <span className="songlistplay">
-                  <span className="timestamp">
-                    {song.duration}
-                    <FontAwesomeIcon icon={faPlayCircle} className="songItemPlay"/>
-                  </span>
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="songBanner"></div>
-      </div>
-
-      <div className="bottom">
-        <input
-          type="range"
-          id="myProgressBar"
-          min="0"
-          value={progress}
-          max="100"
-          onChange={(e) => setProgress(e.target.value)}
-        />
-        <div className="icons">
-          <FontAwesomeIcon icon={faStepBackward} className="fa-2x" id="previous" />
-          <FontAwesomeIcon icon={faCirclePlay} className="fa-2x" id="masterplay" />
-          <FontAwesomeIcon icon={faStepForward} className="fa-2x" id="next" />
-        </div>
-        <div className="songInfo">
-          <img src="playing.gif" width="42px" alt="" id="gif" />
-          <span id="masterSongName">{currentSong.name}</span>
+    <div className="App">
+      <h1>Spotify Clone</h1>
+      <div className="player">
+        <img src={songsList[songIndex].coverPath} alt="cover" />
+        <h2>{songsList[songIndex].songName}</h2>
+        <div className="controls">
+          <FontAwesomeIcon icon={faStepBackward} size="2x" onClick={prevSong} />
+          <FontAwesomeIcon icon={isPlaying ? faPauseCircle : faPlayCircle} size="2x" onClick={togglePlayPause} />
+          <FontAwesomeIcon icon={faStepForward} size="2x" onClick={nextSong} />
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default App;
-
